@@ -8,7 +8,7 @@ export class AimService {
   constructor(@InjectModel(Aim.name) private aimModel: Model<Aim>) {}
 
   async create(aim: Aim): Promise<Aim> {
-    return await this.aimModel.create(aim);
+    return this.aimModel.create(aim);
   }
 
   async findAll(): Promise<Aim[]> {
