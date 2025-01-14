@@ -5,10 +5,10 @@ import { AimService } from './aim.service';
 import { Aim } from './schemas/aim.schema';
 import { CreateAimDto } from './dto/create-aim.dto';
 
-const aimMock: CreateAimDto = {
-  title: 'New Aim',
-  description: 'Aim Description',
-};
+const title = 'New Aim';
+const description = 'Aim Description';
+
+const aimMock: CreateAimDto = { title, description };
 
 describe('AimService', () => {
   let aimService: AimService;
@@ -42,10 +42,7 @@ describe('AimService', () => {
     it('should create and return an aim', async () => {
       model.create.mockResolvedValueOnce(aimMock as any);
 
-      const createAimDto: CreateAimDto = {
-        title: 'New Aim',
-        description: 'Aim Description',
-      };
+      const createAimDto: CreateAimDto = { title, description };
 
       const result = await aimService.create(createAimDto);
 
