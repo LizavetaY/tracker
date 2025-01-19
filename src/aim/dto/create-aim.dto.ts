@@ -1,4 +1,5 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsEmpty } from 'class-validator';
+import { User } from '../../auth/schemas/user.schema';
 
 export class CreateAimDto {
   @IsString()
@@ -7,4 +8,7 @@ export class CreateAimDto {
 
   @IsString()
   description: string;
+
+  @IsEmpty()
+  user: User;
 }

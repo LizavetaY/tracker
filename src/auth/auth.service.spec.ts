@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { getModelToken } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { Role } from './enums/role.enum';
 import { AuthService } from './auth.service';
 import { User } from './schemas/user.schema';
 import { Creds } from './schemas/creds.schema';
@@ -24,6 +25,7 @@ const userMock = {
   _id: userId,
   name: 'User Name',
   email: 'test@test.com',
+  roles: [Role.User],
 };
 
 const credsMock = {
@@ -77,7 +79,8 @@ describe('AuthService', () => {
     const signUpDto: SignUpDto = {
       name: 'User Name',
       email: 'test@test.com',
-      password: '12345678'
+      password: '12345678',
+      roles: [Role.User],
     };
 
     it('should create a new user and return the token', async () => {
@@ -92,6 +95,7 @@ describe('AuthService', () => {
       expect(userModel.create).toHaveBeenCalledWith({
         name: signUpDto.name,
         email: signUpDto.email,
+        roles: signUpDto.roles,
       });
       expect(credsModel.create).toHaveBeenCalledWith({
         password,

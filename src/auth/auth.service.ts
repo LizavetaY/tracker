@@ -20,7 +20,7 @@ export class AuthService {
   ) {}
 
   async signUp(signUpDto: SignUpDto): Promise<{ token: string }> {
-    const { name, email, password } = signUpDto;
+    const { name, email, password, roles } = signUpDto;
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -28,6 +28,7 @@ export class AuthService {
       const user = await this.userModel.create({
         name,
         email,
+        roles,
       });
 
       await this.credsModel.create({
