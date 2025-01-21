@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConflictException, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { getModelToken } from '@nestjs/mongoose';
@@ -10,6 +10,7 @@ import { User } from './schemas/user.schema';
 import { Creds } from './schemas/creds.schema';
 import { SignUpDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
+import { AddAdminRoleDto } from './dto/add-admin-role.dto';
 
 const userId = '61c0ccf11d7bf83d153d7c06';
 const password = 'hashedPassword';
@@ -27,6 +28,10 @@ const userMock = {
   email: 'test@test.com',
   roles: [Role.User],
 };
+const userWithAdminRoleMock = {
+  ...userMock,
+  roles: [Role.User, Role.Admin],
+};
 
 const credsMock = {
   password,
@@ -42,6 +47,7 @@ describe('AuthService', () => {
   const authServiceMock = {
     create: jest.fn(),
     findOne: jest.fn(),
+    findByIdAndUpdate: jest.fn(),
   };
 
   const credsServiceMock = {
@@ -80,7 +86,6 @@ describe('AuthService', () => {
       name: 'User Name',
       email: 'test@test.com',
       password: '12345678',
-      roles: [Role.User],
     };
 
     it('should create a new user and return the token', async () => {
@@ -95,7 +100,7 @@ describe('AuthService', () => {
       expect(userModel.create).toHaveBeenCalledWith({
         name: signUpDto.name,
         email: signUpDto.email,
-        roles: signUpDto.roles,
+        roles: [Role.User]
       });
       expect(credsModel.create).toHaveBeenCalledWith({
         password,
@@ -149,6 +154,29 @@ describe('AuthService', () => {
       expect(bcrypt.compare).toHaveBeenCalledWith(loginDto.password, credsMock.password);
 
       await expect(authService.login(loginDto)).rejects.toThrow(UnauthorizedException);
+    });
+  });
+
+  describe('addAdminRole', () => {
+    const addAdminRoleDto: AddAdminRoleDto = {
+      email: 'test@test.com',
+    };
+
+    it('should find user and add Admin role', async () => {
+      userModel.findOne.mockResolvedValue(userMock as any);
+      userModel.findByIdAndUpdate.mockResolvedValue(userWithAdminRoleMock as any);
+
+      const result = await authService.addAdminRole(addAdminRoleDto);
+
+      expect(userModel.findOne).toHaveBeenCalledWith({ email: addAdminRoleDto.email });
+      expect(userModel.findByIdAndUpdate).toHaveBeenCalledWith(userMock._id, userMock);
+      expect(result).toEqual(userWithAdminRoleMock);
+    });
+
+    it('should throw user does not exist error', async () => {
+      userModel.findOne.mockResolvedValueOnce(null);
+
+      await expect(authService.addAdminRole(addAdminRoleDto)).rejects.toThrow(NotFoundException);
     });
   });
 });

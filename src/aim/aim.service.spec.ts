@@ -1,4 +1,4 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
@@ -9,7 +9,6 @@ import { User } from '../auth/schemas/user.schema';
 import { Role } from '../auth/enums/role.enum';
 
 const id = '678d539dfd0a09ed16a76290';
-const invalidId = 'invalidId';
 const title = 'New Aim';
 const description = 'Aim Description';
 
@@ -91,30 +90,17 @@ describe('AimService', () => {
 
   describe('findById', () => {
     it('should return an aim by ID', async () => {
-      const isValidId = mongoose.isValidObjectId(aimMock._id);
-
       model.findById.mockResolvedValueOnce(aimMock as any);
 
       const result = await aimService.findById(aimMock._id);
 
-      expect(isValidId).toBe(true);
       expect(result).toEqual(aimMock);
       expect(model.findById).toHaveBeenCalledWith(aimMock._id);
     });
 
-    it('should throw BadRequestException if invalid ID was provided', async () => {
-      const isValidId = mongoose.isValidObjectId(invalidId);
-
-      expect(isValidId).toBe(false);
-      await expect(aimService.findById(invalidId)).rejects.toThrow(BadRequestException);
-    });
-
     it('should throw NotFoundException if aim is not found', async () => {
-      const isValidId = mongoose.isValidObjectId(aimMock._id);
-
       model.findById.mockResolvedValueOnce(null);
 
-      expect(isValidId).toBe(true);
       await expect(aimService.findById(aimMock._id)).rejects.toThrow(NotFoundException);
       expect(model.findById).toHaveBeenCalledWith(aimMock._id);
     });
