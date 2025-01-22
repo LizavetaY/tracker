@@ -1,15 +1,15 @@
 import mongoose from 'mongoose';
 import { BadRequestException, createParamDecorator, ExecutionContext } from '@nestjs/common';
 
-export const ValidId = createParamDecorator(
+export const ValidObjectId = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
 
     const id = request.params?.id || '';
 
-    const isValidId = mongoose.isValidObjectId(id);
+    const isValidObjectId = mongoose.isValidObjectId(id);
 
-    if (!isValidId) {
+    if (!isValidObjectId) {
       throw new BadRequestException('Please enter correct id.');
     }
 

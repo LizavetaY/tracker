@@ -1,12 +1,11 @@
-import { Body, Controller, Delete, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post } from '@nestjs/common';
 import { Role } from '../auth/enums/role.enum';
+import { Auth } from '../auth/decorators/auth.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import { ValidId } from '../helpers/decorators/valid-id.decorator';
+import { ValidObjectId } from '../helpers/decorators/valid-object-id.decorator';
 import { AimService } from './aim.service';
 import { Aim } from './schemas/aim.schema';
 import { CreateAimDto } from './dto/create-aim.dto';
-import { Roles } from '../auth/decorators/role.decorator';
-import { RolesGuard } from '../auth/guards/roles.guard';
 import { User } from '../auth/schemas/user.schema';
 
 @Controller('aims')
@@ -25,14 +24,13 @@ export class AimController {
   }
 
   @Get(':id')
-  async getAim(@ValidId() id: string): Promise<Aim> {
+  async getAim(@ValidObjectId() id: string): Promise<Aim> {
     return this.aimService.findById(id);
   }
 
   @Delete(':id')
-  @Roles(Role.Admin)
-  @UseGuards(RolesGuard)
-  async deleteAim(@ValidId() id: string): Promise<string | null> {
+  @Auth(Role.Admin)
+  async deleteAim(@ValidObjectId() id: string): Promise<string | null> {
     return this.aimService.delete(id);
   }
 }

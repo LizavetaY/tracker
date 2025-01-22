@@ -1,8 +1,7 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { Role } from './enums/role.enum';
-import { RolesGuard } from './guards/roles.guard';
 import { Public } from './decorators/publicity.decorator';
-import { Roles } from './decorators/role.decorator';
+import { Auth } from './decorators/auth.decorator';
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
@@ -26,8 +25,7 @@ export class AuthController {
   }
 
   @Post('/add-role')
-  @Roles(Role.Admin)
-  @UseGuards(RolesGuard)
+  @Auth(Role.Admin)
   async addAdminRole(@Body() addAdminRoleDto: AddAdminRoleDto): Promise<User | null> {
     return this.authService.addAdminRole(addAdminRoleDto);
   }
