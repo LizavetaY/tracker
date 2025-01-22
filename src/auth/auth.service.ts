@@ -1,13 +1,15 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
 import { ERROR_MESSAGES } from '../helpers/constants';
+import { Role } from './enums/role.enum';
 import { User } from './schemas/user.schema';
 import { Creds } from './schemas/creds.schema';
 import { JwtService } from '@nestjs/jwt';
 import { SignUpDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
+import { AddAdminRoleDto } from './dto/add-admin-role.dto';
 
 @Injectable()
 export class AuthService {
@@ -28,6 +30,7 @@ export class AuthService {
       const user = await this.userModel.create({
         name,
         email,
+        roles: [Role.User],
       });
 
       await this.credsModel.create({
@@ -71,5 +74,25 @@ export class AuthService {
     const token = this.jwtService.sign({ id: user._id });
 
     return { token };
+  }
+
+  async addAdminRole(addAdminRoleDto: AddAdminRoleDto): Promise<User | null> {
+    const { email } = addAdminRoleDto;
+
+    const user = await this.userModel.findOne({ email });
+
+    if (!user) {
+      throw new NotFoundException(ERROR_MESSAGES.userDoesNotExist);
+    }
+
+    const userRoles = user.roles;
+
+    if (!userRoles.includes(Role.Admin)) {
+      user.roles = [...userRoles, Role.Admin];
+    }
+
+    await this.userModel.findByIdAndUpdate(user._id, user);
+
+    return user;
   }
 }
