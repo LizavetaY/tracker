@@ -4,7 +4,7 @@ import { RolesGuard } from '../guards/roles.guard';
 
 export const ROLES_KEY = 'roles';
 
-export function Auth(...roles: Role[]) {
+export function HasRoles(...roles: Role[]) {
   return applyDecorators(
     SetMetadata(ROLES_KEY, roles),
     UseGuards(RolesGuard),
