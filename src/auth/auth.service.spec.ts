@@ -25,6 +25,7 @@ const token = 'jwtToken';
 const userMock = {
   _id: userId,
   name: 'User Name',
+  surname: 'User Surname',
   email: 'test@test.com',
   roles: [Role.User],
 };
@@ -84,6 +85,7 @@ describe('AuthService', () => {
   describe('signUp', () => {
     const signUpDto: SignUpDto = {
       name: 'User Name',
+      surname: 'User Surname',
       email: 'test@test.com',
       password: '12345678',
     };
@@ -99,6 +101,7 @@ describe('AuthService', () => {
       expect(bcrypt.hash).toHaveBeenCalledWith(signUpDto.password, 10);
       expect(userModel.create).toHaveBeenCalledWith({
         name: signUpDto.name,
+        surname: signUpDto.surname,
         email: signUpDto.email,
         roles: [Role.User]
       });

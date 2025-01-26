@@ -9,6 +9,9 @@ export class User extends Document {
   @Prop()
   name: string;
 
+  @Prop()
+  surname: string;
+
   @Prop({ unique: [ true, 'Email already exists' ] })
   email: string;
 
