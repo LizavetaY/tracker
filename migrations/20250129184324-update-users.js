@@ -24,7 +24,7 @@ module.exports = {
    * @returns void
    */
   async down(db) {
-    console.log(`Revert migration: Removing 'surname' field to ${databaseSchema}...`);
+    console.log(`Revert migration: Removing 'surname' field from ${databaseSchema}...`);
 
     const result = await db.collection(databaseSchema).updateMany(
       {},
