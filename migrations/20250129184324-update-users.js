@@ -24,7 +24,7 @@ module.exports = {
    * @returns void
    */
   async down(db) {
-    console.log(`Starting migration: Adding 'surname' field to ${databaseSchema}...`);
+    console.log(`Revert migration: Removing 'surname' field to ${databaseSchema}...`);
 
     const result = await db.collection(databaseSchema).updateMany(
       {},
@@ -34,6 +34,6 @@ module.exports = {
       },
     );
 
-    console.log(`Migration completed: ${result.modifiedCount} documents updated.`);
+    console.log(`Migration reverted: ${result.modifiedCount} documents updated.`);
   }
 };
