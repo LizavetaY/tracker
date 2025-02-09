@@ -5,7 +5,11 @@ export const ValidObjectId = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
 
-    const id = request.params?.id || '';
+    const id = request.params?.id || request.query?.id || '';
+
+    if (!id) {
+      return undefined;
+    }
 
     const isValidObjectId = mongoose.isValidObjectId(id);
 
