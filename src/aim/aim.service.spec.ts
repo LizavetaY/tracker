@@ -11,11 +11,18 @@ import { Role } from '../auth/enums/role.enum';
 const id = '678d539dfd0a09ed16a76290';
 const title = 'New Aim';
 const description = 'Aim Description';
+const todos = [
+  {
+    title: 'some text',
+    isCompleted: true,
+  },
+];
 
 const aimMock = {
   _id: id,
   title,
   description,
+  todos,
   user: id,
 };
 const userMock = {
