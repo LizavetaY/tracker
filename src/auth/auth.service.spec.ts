@@ -28,6 +28,7 @@ const userMock = {
   surname: 'User Surname',
   email: 'test@test.com',
   roles: [Role.User],
+  discord_nickname: ''
 };
 const userWithAdminRoleMock = {
   ...userMock,
@@ -88,6 +89,7 @@ describe('AuthService', () => {
       surname: 'User Surname',
       email: 'test@test.com',
       password: '12345678',
+      discord_nickname: 'test'
     };
 
     it('should create a new user and return the token', async () => {
@@ -103,7 +105,8 @@ describe('AuthService', () => {
         name: signUpDto.name,
         surname: signUpDto.surname,
         email: signUpDto.email,
-        roles: [Role.User]
+        roles: [Role.User],
+        discord_nickname: signUpDto.discord_nickname,
       });
       expect(credsModel.create).toHaveBeenCalledWith({
         password,
