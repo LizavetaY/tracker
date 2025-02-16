@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AimModule } from './aim/aim.module';
 import { AuthModule } from './auth/auth.module';
 import { DBModule } from './db/db.module';
+import { DiscordBotModule } from './discord-bot/discord-bot.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { DBModule } from './db/db.module';
     AimModule,
     AuthModule,
     DBModule,
+    DiscordBotModule,
   ]
 })
 

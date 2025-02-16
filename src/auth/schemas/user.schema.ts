@@ -20,6 +20,9 @@ export class User extends Document {
     default: [Role.User],
   })
   roles: Role[];
+
+  @Prop()
+  discordNickname: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
