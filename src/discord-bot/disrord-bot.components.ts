@@ -80,7 +80,7 @@ export class DiscordBotComponents {
         surname: interaction.fields.getTextInputValue('surname') || '',
         email,
         password: interaction.fields.getTextInputValue('password') || '',
-        discord_nickname: interaction.user?.username || '',
+        discordNickname: interaction.user?.username || '',
       };
 
       await this.authService.signUp(userToCreate);
@@ -99,7 +99,7 @@ export class DiscordBotComponents {
   public async onModalCreateAim(@Ctx() [interaction]: ModalContext) {
     try {
       const userFromDB = await this.userModel.findOne({
-        discord_nickname: interaction.user?.username,
+        discordNickname: interaction.user?.username,
       });
   
       if (!userFromDB) {

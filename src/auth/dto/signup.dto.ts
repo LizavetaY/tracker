@@ -26,5 +26,5 @@ export class SignUpDto {
 
   @IsOptional()
   @IsString()
-  discord_nickname: string;
+  discordNickname: string;
 }

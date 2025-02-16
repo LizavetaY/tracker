@@ -22,7 +22,7 @@ export class DiscordBotCommands {
     const discordNickname = interaction.user?.username || '';
 
     const userFromDBByDiscordNickname = await this.userModel.findOne({
-      discord_nickname: discordNickname,
+      discordNickname: discordNickname,
     });
 
     if (userFromDBByDiscordNickname) {

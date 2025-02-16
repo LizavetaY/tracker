@@ -6,12 +6,12 @@ module.exports = {
    * @returns void
    */
   async up(db) {
-    console.log(`Starting migration: Adding 'discord_nickname' field to ${databaseSchema}...`);
+    console.log(`Starting migration: Adding 'discordNickname' field to ${databaseSchema}...`);
 
     const result = await db.collection(databaseSchema).updateMany(
       {},
       {
-        $set: { discord_nickname: '' },
+        $set: { discordNickname: '' },
         $currentDate: { updatedAt: true },
       },
     );
@@ -24,12 +24,12 @@ module.exports = {
    * @returns void
    */
   async down(db) {
-    console.log(`Revert migration: Removing 'discord_nickname' field from ${databaseSchema}...`);
+    console.log(`Revert migration: Removing 'discordNickname' field from ${databaseSchema}...`);
 
     const result = await db.collection(databaseSchema).updateMany(
       {},
       {
-        $unset: { discord_nickname: '' },
+        $unset: { discordNickname: '' },
         $currentDate: { updatedAt: true },
       },
     );

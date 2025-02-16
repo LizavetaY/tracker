@@ -22,7 +22,7 @@ export class User extends Document {
   roles: Role[];
 
   @Prop()
-  discord_nickname: string;
+  discordNickname: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

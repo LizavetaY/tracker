@@ -22,7 +22,7 @@ export class AuthService {
   ) {}
 
   async signUp(signUpDto: SignUpDto): Promise<{ token: string }> {
-    const { name, surname, email, password, discord_nickname } = signUpDto;
+    const { name, surname, email, password, discordNickname } = signUpDto;
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -32,7 +32,7 @@ export class AuthService {
         surname,
         email,
         roles: [Role.User],
-        discord_nickname,
+        discordNickname,
       });
 
       await this.credsModel.create({
