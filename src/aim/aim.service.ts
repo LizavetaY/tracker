@@ -1,13 +1,20 @@
 import { Model } from 'mongoose';
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { Response } from 'express';
 import { InjectModel } from '@nestjs/mongoose';
+import { ERROR_MESSAGES } from 'src/helpers/constants';
 import { Aim } from './schemas/aim.schema';
 import { User } from '../auth/schemas/user.schema';
 import { AddAimFileDto } from './dto/add-aim-file.dto';
+import { UploadService } from 'src/files/upload.service';
 
 @Injectable()
 export class AimService {
-  constructor(@InjectModel(Aim.name) private aimModel: Model<Aim>) {}
+  constructor(
+    @InjectModel(Aim.name) 
+    private aimModel: Model<Aim>,
+    private uploadService: UploadService,
+  ) {}
 
   async create(aim: Aim, user: User): Promise<Aim> {
     const aimToSave = Object.assign(aim, { user: user._id });
@@ -23,7 +30,7 @@ export class AimService {
     const aim = await this.aimModel.findById(id);
 
     if (!aim) {
-      throw new NotFoundException('Aim is not found.');
+      throw new NotFoundException(ERROR_MESSAGES.aimNotFound);
     }
 
     return aim;
@@ -43,45 +50,45 @@ export class AimService {
     id: string,
     aimFile: AddAimFileDto,
     file: Express.Multer.File,
-  ): Promise<string> {
+  ): Promise<Aim | null> {
     const aim = await this.aimModel.findById(id);
 
     if (!aim) {
-      throw new NotFoundException('Aim is not found.');
+      throw new NotFoundException(ERROR_MESSAGES.aimNotFound);
     }
 
-    const fileToSave = {
-      name: aimFile.name,
-      type: file.mimetype,
-      data: file.buffer?.toString('base64') || '',
-    };
+    const savedFileId = await this.uploadService.uploadFile(file);
 
-    await this.aimModel.findByIdAndUpdate(id, {
-      files: [...aim.files, fileToSave],
-    });
+    if (savedFileId) {
+      const fileToSave = {
+        id: savedFileId,
+        name: aimFile.name,
+        type: file.mimetype,
+      };
 
-    return 'The file was successfully added!';
+      await this.aimModel.findByIdAndUpdate(id, {
+        files: [...aim.files, fileToSave],
+      });
+
+      return this.aimModel.findById(id);
+    }
+
+    return null;
   }
 
-  async getFile(
-    id: string,
-    fileName: string,
-  ): Promise<{ buffer: Buffer; type: string }> {
+  async getFile(id: string, fileId: string, res: Response) {
     const aim = await this.aimModel.findById(id);
 
     if (!aim) {
-      throw new NotFoundException('Aim is not found.');
+      throw new NotFoundException(ERROR_MESSAGES.aimNotFound);
     }
 
-    const file = aim.files?.find((file) => file.name === fileName);
+    const file = aim.files?.find((file) => file.id === fileId);
 
     if (!file) {
-      throw new NotFoundException('File is not found.');
+      throw new NotFoundException(ERROR_MESSAGES.fileNotFound);
     }
 
-    return {
-      buffer: Buffer.from(file.data, 'base64'),
-      type: file.type,
-    };
+    return this.uploadService.getFile(file.id, res);
   }
 }

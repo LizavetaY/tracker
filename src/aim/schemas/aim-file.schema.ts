@@ -5,13 +5,13 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 })
 export class AimFile {
   @Prop()
+  id: string;
+
+  @Prop()
   name: string;
 
   @Prop()
   type: string;
-
-  @Prop()
-  data: string;
 }
 
 export const AimFileSchema = SchemaFactory.createForClass(AimFile);

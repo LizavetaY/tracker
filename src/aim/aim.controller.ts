@@ -4,7 +4,6 @@ import {
   Delete,
   FileTypeValidator,
   Get,
-  MaxFileSizeValidator,
   Param,
   ParseFilePipe,
   Post,
@@ -26,11 +25,13 @@ import { AddAimFileDto } from './dto/add-aim-file.dto';
 
 @Controller('aims')
 export class AimController {
-  constructor(private aimService: AimService) {
-  }
+  constructor(private aimService: AimService) {}
 
   @Post()
-  async createAim(@Body() aim: CreateAimDto, @CurrentUser() user: User): Promise<Aim> {
+  async createAim(
+    @Body() aim: CreateAimDto,
+    @CurrentUser() user: User,
+  ): Promise<Aim> {
     return this.aimService.create(aim, user);
   }
 
@@ -58,7 +59,6 @@ export class AimController {
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }),
           new FileTypeValidator({
             fileType: /(image\/(jpeg|png)|application\/pdf)/,
           }),
@@ -66,19 +66,16 @@ export class AimController {
       }),
     )
     file: Express.Multer.File,
-  ): Promise<string> {
+  ): Promise<Aim | null> {
     return this.aimService.uploadFile(id, body, file);
   }
 
-  @Get('file/:id/:fileName')
+  @Get('file/:id/:fileId')
   async getFile(
     @ValidObjectId() id: string,
-    @Param('fileName') fileName: string,
+    @Param('fileId') fileId: string,
     @Res() res: Response,
   ) {
-    const file = await this.aimService.getFile(id, fileName);
-
-    res.setHeader('Content-Type', file.type);
-    res.send(file.buffer);
+    return this.aimService.getFile(id, fileId, res);
   }
 }
