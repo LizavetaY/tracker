@@ -4,7 +4,6 @@ import {
   Delete,
   FileTypeValidator,
   Get,
-  Param,
   ParseFilePipe,
   Post,
   Res,
@@ -66,16 +65,12 @@ export class AimController {
       }),
     )
     file: Express.Multer.File,
-  ): Promise<Aim | null> {
+  ): Promise<string | null> {
     return this.aimService.uploadFile(id, body, file);
   }
 
-  @Get('file/:id/:fileId')
-  async getFile(
-    @ValidObjectId() id: string,
-    @Param('fileId') fileId: string,
-    @Res() res: Response,
-  ) {
-    return this.aimService.getFile(id, fileId, res);
+  @Get('file/:id')
+  async getFile(@ValidObjectId() fileId: string, @Res() res: Response) {
+    return this.aimService.getFile(fileId, res);
   }
 }

@@ -16,9 +16,18 @@ export class UploadService {
     });
   }
 
-  async uploadFile(file: Express.Multer.File): Promise<string | null> {
+  async uploadFile(
+    aimId: string,
+    fileName: string,
+    file: Express.Multer.File,
+  ): Promise<string | null> {
     return new Promise((resolve, reject) => {
-      const uploadStream = this.bucket.openUploadStream(file.originalname);
+      const uploadStream = this.bucket.openUploadStream(file.originalname, {
+        metadata: {
+          aimId,
+          fileName,
+        },
+      });
 
       uploadStream.end(file.buffer);
 

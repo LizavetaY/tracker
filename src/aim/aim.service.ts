@@ -16,6 +16,16 @@ export class AimService {
     private uploadService: UploadService,
   ) {}
 
+  async getAimById(aimId: string): Promise<Aim> {
+    const aim = await this.aimModel.findById(aimId);
+
+    if (!aim) {
+      throw new NotFoundException(ERROR_MESSAGES.aimNotFound);
+    }
+
+    return aim;
+  }
+
   async create(aim: Aim, user: User): Promise<Aim> {
     const aimToSave = Object.assign(aim, { user: user._id });
 
@@ -27,13 +37,7 @@ export class AimService {
   }
 
   async findById(id: string): Promise<Aim> {
-    const aim = await this.aimModel.findById(id);
-
-    if (!aim) {
-      throw new NotFoundException(ERROR_MESSAGES.aimNotFound);
-    }
-
-    return aim;
+    return this.getAimById(id);
   }
 
   async delete(id: string): Promise<string | null> {
@@ -50,45 +54,11 @@ export class AimService {
     id: string,
     aimFile: AddAimFileDto,
     file: Express.Multer.File,
-  ): Promise<Aim | null> {
-    const aim = await this.aimModel.findById(id);
-
-    if (!aim) {
-      throw new NotFoundException(ERROR_MESSAGES.aimNotFound);
-    }
-
-    const savedFileId = await this.uploadService.uploadFile(file);
-
-    if (savedFileId) {
-      const fileToSave = {
-        id: savedFileId,
-        name: aimFile.name,
-        type: file.mimetype,
-      };
-
-      await this.aimModel.findByIdAndUpdate(id, {
-        files: [...aim.files, fileToSave],
-      });
-
-      return this.aimModel.findById(id);
-    }
-
-    return null;
+  ): Promise<string | null> {
+    return this.uploadService.uploadFile(id, aimFile.name, file);
   }
 
-  async getFile(id: string, fileId: string, res: Response) {
-    const aim = await this.aimModel.findById(id);
-
-    if (!aim) {
-      throw new NotFoundException(ERROR_MESSAGES.aimNotFound);
-    }
-
-    const file = aim.files?.find((file) => file.id === fileId);
-
-    if (!file) {
-      throw new NotFoundException(ERROR_MESSAGES.fileNotFound);
-    }
-
-    return this.uploadService.getFile(file.id, res);
+  async getFile(fileId: string, res: Response) {
+    return this.uploadService.getFile(fileId, res);
   }
 }
