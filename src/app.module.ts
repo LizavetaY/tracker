@@ -5,6 +5,7 @@ import { AimModule } from './aim/aim.module';
 import { AuthModule } from './auth/auth.module';
 import { DBModule } from './db/db.module';
 import { DiscordBotModule } from './discord-bot/discord-bot.module';
+import { UploadModule } from './files/upload.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { DiscordBotModule } from './discord-bot/discord-bot.module';
     AuthModule,
     DBModule,
     DiscordBotModule,
+    UploadModule,
   ]
 })
 
